@@ -1,0 +1,271 @@
+body {
+    background-color: #1a43ff;
+    color: #00007a;
+    font-family: "Lucida Console";
+    font-size:16px;
+    line-height: 22px;
+    text-align: center;
+    margin: 0;
+}
+
+.container {
+    background-color: #c9cafb;
+    border: 10px solid #FFF;
+    border-right-color: #66699e;
+    border-bottom-color: #66699e;
+    margin: 0 auto;
+    max-width:800px;
+    box-shadow: 20px 20px #000044;
+}
+
+.logo {
+    display: block;
+    margin: 0 auto;
+    max-width: 800px;
+    text-align: left;
+}
+.logo img {
+    width:150px;
+}
+
+.box {
+
+}
+
+.content {
+    padding: 20px;
+}
+.content.terminal {
+    text-align: left;
+}
+
+h1 {
+    background-color: #f63808;
+    color: #ffe118;
+    padding: 5px;
+    font-size: 26px;
+    font-weight: 500;
+}
+
+hr {
+    border-color: #000;
+}
+
+.text-red {
+    color: #f63808;
+}
+
+.row {
+    border-top: 2px solid #000;
+}
+
+.row .col {
+    float:left;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.row .col-40 {
+    width:40%;
+}
+.row .col-60 {
+    width:60%;
+    border-right: 2px solid #000;
+}
+.cl {
+    clear:both;
+}
+
+
+.introrow {
+    padding-left: 5px;
+    display:none;
+}
+#row0 {
+    display: block;
+    margin-bottom:20px;
+}
+#row4,#row9 {
+    margin-top:20px;
+}
+#row5,#row6,#row7,#row8 {
+    padding-left:25px;
+}
+
+.blinking-cursor {
+    font-weight: 100;
+    font-size: 30px;
+    color: #2E3D48;
+    -webkit-animation: 1s blink step-end infinite;
+    -moz-animation: 1s blink step-end infinite;
+    -ms-animation: 1s blink step-end infinite;
+    -o-animation: 1s blink step-end infinite;
+    animation: 1s blink step-end infinite;
+}
+
+@keyframes "blink" {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: black;
+    }
+}
+
+@-moz-keyframes blink {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: black;
+    }
+}
+
+@-webkit-keyframes "blink" {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: black;
+    }
+}
+
+@-ms-keyframes "blink" {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: black;
+    }
+}
+
+@-o-keyframes "blink" {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: black;
+    }
+}
+
+.nav-container {
+    -webkit-box-direction: normal;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: silver;
+    font-weight: bolder;
+    text-align: center;
+    line-height: 14px;
+    padding-top:5px;
+}
+
+.nav-container a {
+    margin: 0 1em;
+    text-decoration: none;
+    color: #000;
+    padding: 0 1em;
+    font-weight: normal;
+    font-size: 14px;
+    padding-top:4px;
+}
+
+.nav-container a.active,
+.nav-container a:hover {
+    background-color: #1a43ff;
+    color: #fff;
+}
+
+button {
+    background-color: #f63808;
+    color:#FFF;
+    padding: 6px 14px;
+    #box-shadow: 5px 5px #000044;
+    cursor: pointer;
+}
+button:hover {
+    color:#000000;
+}
+button:disabled {
+    background-color: rgba(246, 56, 8, 0.45);
+    cursor: not-allowed;
+    color:#FFF;
+}
+
+.bounce-button {
+    display:block;
+    margin: 0 auto;
+    width:200px;
+    background-color: #f63808;
+    color:#FFF;
+    padding: 10px 20px;
+    margin-top:50px;
+    margin-bottom: 50px;
+    text-decoration:none;
+    box-shadow: 5px 5px #000044;
+}
+.bounce-button:hover {
+    color:#000000;
+}
+
+input[type='radio'] {
+    box-sizing: border-box;
+    appearance: none;
+    background: white;
+    outline: 0px solid #00007a;
+    border: 3px solid white;
+    width: 16px;
+    height: 16px;
+}
+
+input[type='radio']:checked {
+    background: #00007a;
+}
+input[type='radio']:disabled {
+    background: rgba(0, 0, 122, 0.28);
+    outline: 2px solid rgba(0, 0, 0, 0.19);
+}
+
+#cl {
+    text-align: left;
+    font-size:12px;
+    padding: 20px;
+}
+#cl h2 {
+    padding-top: 0;
+    margin-top: 0;
+    font-size:16px;
+}
+
+#cl input[type="text"]{
+    max-width: 10em;
+    border: none;
+    font-family: inherit;
+    background: transparent;
+    padding:0 .5em;
+    display:inline;
+}
+#cl input[type="text"]:focus{
+    background: transparent;
+    color: #000;
+    outline:none;
+}
+#cl .command{
+    display: block;
+    max-width: 40em;
+    color: #181818;
+    font-weight: 700;
+    margin: 2em 0;
+}
+
+
+#cl section{
+    display: none;
+}
+#cl .open{
+    display: block;
+}
+#cl span{
+    display: block;
+    color:#999;
+    line-height:1;
+}
