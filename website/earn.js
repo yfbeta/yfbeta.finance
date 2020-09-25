@@ -23,14 +23,34 @@ let balancesVaultTotal = [];
 let balancesVaultProfits = [];
 let source = [
     {
-        'pool': 'USDT',
-        'poolAddress': '',
-        'poolTokenSymbol': 'yfUSDT',
-        'poolTokenDecimals': 6,
-        'poolTokenAddress': '',
-        'rewardTokenSymbol': 'yfBETA',
-        'rewardTokenDecimals': 18,
-        'rewardTokenAddress': '0x89ee58af4871b474c30001982c3d7439c933c838'
+        'pool': DAI_POOL_NAME,
+        'poolAddress': DAI_POOL_ADDRESS,
+        'poolTokenSymbol': DAI_VAULT_SYMBOL,
+        'poolTokenDecimals': DAI_VAULT_DECIMALS,
+        'poolTokenAddress': DAI_VAULT_ADDRESS,
+        'rewardTokenSymbol': REWARD_TOKEN_SYMBOL,
+        'rewardTokenDecimals': REWARD_TOKEN_DECIMALS,
+        'rewardTokenAddress': REWARD_TOKEN_ADDRESS
+    },
+    {
+        'pool': USDT_POOL_NAME,
+        'poolAddress': USDT_POOL_ADDRESS,
+        'poolTokenSymbol': USDT_VAULT_SYMBOL,
+        'poolTokenDecimals': USDT_VAULT_DECIMALS,
+        'poolTokenAddress': USDT_VAULT_ADDRESS,
+        'rewardTokenSymbol': REWARD_TOKEN_SYMBOL,
+        'rewardTokenDecimals': REWARD_TOKEN_DECIMALS,
+        'rewardTokenAddress': REWARD_TOKEN_ADDRESS
+    },
+    {
+        'pool': USDC_POOL_NAME,
+        'poolAddress': USDC_POOL_ADDRESS,
+        'poolTokenSymbol': USDC_VAULT_SYMBOL,
+        'poolTokenDecimals': USDC_VAULT_DECIMALS,
+        'poolTokenAddress': USDC_VAULT_ADDRESS,
+        'rewardTokenSymbol': REWARD_TOKEN_SYMBOL,
+        'rewardTokenDecimals': REWARD_TOKEN_DECIMALS,
+        'rewardTokenAddress': REWARD_TOKEN_ADDRESS
     }
 ];
 
@@ -44,7 +64,23 @@ const initializeApplication = () => {
         decimals[config['poolTokenSymbol']] = config['poolTokenDecimals'];
         decimals[config['rewardTokenSymbol']] = config['rewardTokenDecimals'];
         poolAddresses[config['pool']] = config['poolAddress'];
+
+        var _row = '<tr>';
+        _row+= '<td><input type="radio" name="currentPool" value="'+config['pool']+'" data-token="'+config['poolTokenSymbol']+'" data-reward-token="'+ config['rewardTokenSymbol'] +'" /></td>';
+        _row+= '<td>'+ config['pool'] +'</td>';
+        _row+= '<td>'+ config['poolTokenSymbol'] +'</td>';
+        _row+= '<td class="display--unstaked" data-pool="'+config['pool']+'" data-token="'+config['poolTokenSymbol']+'">-</td>';
+        _row+= '<td class="display--staked" data-pool="'+config['pool']+'">-</td>';
+        _row+= '<td>'+ config['rewardTokenSymbol'] +'</td>';
+        _row+= '<td class="display--profits" data-pool="'+config['pool']+'">-</td>';
+        _row+= '</tr>';
+        $('#eran-table tbody').append(_row);
     }
+
+    $('input[name="currentPool"]').on('change', function() {
+        onPoolChanged();
+        log('selected pool is now: ' + currentPool);
+    });
 
     $('#btn-wallet-connect').on('click', function() {
         connectWallet(function() {
@@ -64,7 +100,10 @@ const initializeApplication = () => {
         $('#btn-deposit').attr('disabled', true);
 
         if($(e.target).data('type') == 'deposit') {
+            console.log(currentToken);
+            console.log(balances);
             $('#input--amount').val(balances[currentToken]);
+            $('#input--amount').removeAttr('disabled');
             $('#btn-deposit').removeAttr('disabled');
         }
     });
@@ -155,6 +194,7 @@ const profits = () => {
 const withdraw = () => {
     log('please confirm withdraw');
     var done = false;
+    var _amount = balancesPools[currentPool] * (10 ** decimals[currentToken]);
     poolContracts[currentPool].methods.exit().send({from:account})
         .on('transactionHash', function(hash){
             log(false, hash)
@@ -217,15 +257,11 @@ lockDisplay();
 
 const onPoolChanged = () => {
 
-    if((currentPool && $('input[name="currentPool"]').val()) && (currentPool != $('input[name="currentPool"]').val())) {
-        log('selected pool is now: ' + currentPool);
-    }
-
     $('#input--amount').val(0);
     $('#input--amount').attr('disabled', true);
-    currentPool = $('input[name="currentPool"]').val();
-    currentToken = $('input[name="currentPool"]').data('token');
-    currentRewardToken = $('input[name="currentPool"]').data('reward-token');
+    currentPool = $('input[name="currentPool"]:checked').val();
+    currentToken = $('input[name="currentPool"]:checked').data('token');
+    currentRewardToken = $('input[name="currentPool"]:checked').data('reward-token');
 
 
     $('#input--amount').attr('disabled', true);
@@ -247,4 +283,3 @@ const onPoolChanged = () => {
     }
 }
 
-$('input[name="currentPool"]').on('change', onPoolChanged);
