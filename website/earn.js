@@ -194,7 +194,6 @@ const profits = () => {
 const withdraw = () => {
     log('please confirm withdraw');
     var done = false;
-    var _amount = balancesPools[currentPool] * (10 ** decimals[currentToken]);
     poolContracts[currentPool].methods.exit().send({from:account})
         .on('transactionHash', function(hash){
             log(false, hash)
@@ -214,7 +213,8 @@ const withdraw = () => {
         });
 }
 const deposit = () => {
-    let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
+    let _amount = web3.utils.toHex($('#input--amount').val() * (10**decimals[currentToken]));
+
     log('please confirm approval');
     var allowed = false;
     tokenContracts[currentToken].methods.approve(poolAddresses[currentPool], _amount).send({from:account})

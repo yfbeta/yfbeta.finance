@@ -1,3 +1,5 @@
+
+
 $(document).ready(function() {
     if(ethEnabled()) {
         initializeWeb3();
@@ -153,11 +155,13 @@ const updateVaultDispaly = (token) => {
     }
 }
 
+
 const withdraw = () => {
-    let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
+    let _amount = web3.utils.toHex($('#input--amount').val() * (10**decimals[currentToken]));
+
     log('please confirm withdraw');
     var done = false;
-    vaultContracts[currentToken].methods.withdraw(_amount.toString()).send({from:account})
+    vaultContracts[currentToken].methods.withdraw(_amount).send({from:account})
         .on('transactionHash', function(hash){
             log(false, hash)
         })
@@ -173,12 +177,13 @@ const withdraw = () => {
         });
 }
 const deposit = () => {
-    let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
+    let _amount = web3.utils.toHex($('#input--amount').val() * (10**decimals[currentToken]));
+
     log('please confirm approval');
     console.log(_amount);
     if(_amount > allowances[currentToken]) {
         var allowed = false;
-        tokenContracts[currentToken].methods.approve(vaultAddresses[currentToken], _amount.toString()).send({from:account})
+        tokenContracts[currentToken].methods.approve(vaultAddresses[currentToken], _amount).send({from:account})
             .on('transactionHash', function(hash){
                 log(false, hash)
             })
@@ -187,7 +192,7 @@ const deposit = () => {
                     allowed = true;
                     var staked = false;
                     log('please confirm deposit');
-                    vaultContracts[currentToken].methods.deposit(_amount.toString()).send({from:account})
+                    vaultContracts[currentToken].methods.deposit(_amount).send({from:account})
                         .on('transactionHash', function(hash){
                             log(false, hash)
                         })
