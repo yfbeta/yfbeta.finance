@@ -12,15 +12,28 @@ let vaultContracts = [];
 let vaultAddresses = [];
 let decimals = [];
 let balances = [];
+let allowances = [];
 let balancesVault = [];
 let balancesVaultTotal = [];
 let balancesVaultProfits = [];
 let source = [
     {
-        'tokenSymbol': 'USDT',
-        'tokenDecimals': 6,
-        'tokenAddress': '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-        'vaultAddress': ''
+        'tokenSymbol': DAI_SYMBOL,
+        'tokenDecimals': DAI_DECIMALS,
+        'tokenAddress': DAI_ADDRESS,
+        'vaultAddress': DAI_VAULT_ADDRESS
+    },
+    {
+        'tokenSymbol': USDT_SYMBOL,
+        'tokenDecimals': USDT_DECIMALS,
+        'tokenAddress': USDT_ADDRESS,
+        'vaultAddress': USDT_VAULT_ADDRESS
+    },
+    {
+        'tokenSymbol': USDC_SYMBOL,
+        'tokenDecimals': USDC_DECIMALS,
+        'tokenAddress': USDC_ADDRESS,
+        'vaultAddress': USDC_VAULT_ADDRESS
     }
 ];
 
@@ -81,12 +94,18 @@ const fetchAllBalances = () => {
 }
 
 const fetchBalance = (token) => {
-    console.log('-------- fetchBalance');
-    console.log(token);
     tokenContracts[token].methods.balanceOf(account).call({from:account}, function (error, result) {
         if(!error) {
             balances[token] = result.toString() / (10 ** decimals[token]);
             updateVaultDispaly(token);
+        } else {
+            console.log(error);
+        }
+    });
+    tokenContracts[token].methods.allowance(account, vaultAddresses[token]).call({from:account}, function (error, result) {
+        if(!error) {
+            allowances[token] = result.toString();
+            console.log(allowances);
         } else {
             console.log(error);
         }
@@ -138,7 +157,7 @@ const withdraw = () => {
     let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
     log('please confirm withdraw');
     var done = false;
-    vaultContracts[currentToken].methods.withdraw(_amount).send({from:account})
+    vaultContracts[currentToken].methods.withdraw(_amount.toString()).send({from:account})
         .on('transactionHash', function(hash){
             log(false, hash)
         })
@@ -156,32 +175,49 @@ const withdraw = () => {
 const deposit = () => {
     let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
     log('please confirm approval');
-    var allowed = false;
-    tokenContracts[currentToken].methods.approve(vaultAddresses[currentToken], _amount).send({from:account})
-        .on('transactionHash', function(hash){
-            log(false, hash)
-        })
-        .on('confirmation', function(confirmationNumber, receipt){
-            if(!allowed) {
-                allowed = true;
-                var staked = false;
-                log('please confirm deposit');
-                vaultContracts[currentToken].methods.deposit(_amount).send({from:account})
-                    .on('transactionHash', function(hash){
-                        log(false, hash)
-                    })
-                    .on('confirmation', function(confirmationNumber, receipt){
-                        if(!staked) {
-                            staked = true;
-                            log('trasnaction done');
-                            fetchBalance(currentToken);
-                        }
-                    })
-            }
-        })
-        .on('error', function(error){
-            log(error);
-        });
+    console.log(_amount);
+    if(_amount > allowances[currentToken]) {
+        var allowed = false;
+        tokenContracts[currentToken].methods.approve(vaultAddresses[currentToken], _amount.toString()).send({from:account})
+            .on('transactionHash', function(hash){
+                log(false, hash)
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if(!allowed) {
+                    allowed = true;
+                    var staked = false;
+                    log('please confirm deposit');
+                    vaultContracts[currentToken].methods.deposit(_amount.toString()).send({from:account})
+                        .on('transactionHash', function(hash){
+                            log(false, hash)
+                        })
+                        .on('confirmation', function(confirmationNumber, receipt){
+                            if(!staked) {
+                                staked = true;
+                                log('trasnaction done');
+                                fetchBalance(currentToken);
+                            }
+                        })
+                }
+            })
+            .on('error', function(error){
+                log(error);
+            });
+    } else {
+        var staked = false;
+        log('please confirm deposit');
+        vaultContracts[currentToken].methods.deposit(_amount).send({from:account})
+            .on('transactionHash', function(hash){
+                log(false, hash)
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if(!staked) {
+                    staked = true;
+                    log('trasnaction done');
+                    fetchBalance(currentToken);
+                }
+            })
+    }
 }
 
 const lockDisplay = () => {

@@ -38,7 +38,7 @@
             </div>
             <div>
                 <h4>Stake your LP tokens for rewards</h4>
-                <table width="100%">
+                <table width="100%" id="eran-table">
                     <thead>
                     <tr>
                         <th></th>
@@ -51,34 +51,29 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><input type="radio" name="currentPool" value="USDT" data-token="yfUSDT" data-reward-token="yfBETA" /></td>
-                        <td>USDT</td>
-                        <td>yfUSDT</td>
-                        <td class="display--unstaked" data-pool="USDT" data-token="yfUSDT">-</td>
-                        <td class="display--staked" data-pool="USDT">-</td>
-                        <td>yfBETA</td>
-                        <td class="display--profits" data-pool="USDT">-</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">
-                            <div width="200px">
-                                <input type="number" min="0" width="200px" placeholder="0" value="" class="input--balance" id="input--amount">
-                                &nbsp;<a href="#" class="btn-max" data-type="deposit">max</a>
-                            </div>
-                        </td>
-                        <td>
-                            <button id="btn-deposit" class="btn">Deposit</button>
-                        </td>
-                        <td>
-                            <button id="btn-withdraw" class="btn">Withdraw</button>
-                        </td>
-                        <td></td>
-                        <td>
-                            <button id="btn-profits" class="btn">Claim</button>
-                        </td>
-                    </tr>
+
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">
+                                <div width="200px">
+                                    <input type="number" min="0" width="200px" placeholder="0" value="" class="input--balance" id="input--amount">
+                                    &nbsp;<a href="#" class="btn-max" data-type="deposit">max</a>
+                                </div>
+                            </td>
+                            <td>
+                                <button id="btn-deposit" class="btn">Stake</button>
+                            </td>
+                            <td>
+                                <button id="btn-withdraw" class="btn">Unstake</button>
+                            </td>
+                            <td></td>
+                            <td>
+                                <button id="btn-profits" class="btn">Claim</button>
+                            </td>
+                        </tr>
+                    </tfoot>
+
                 </table>
             </div>
             <div id="log">

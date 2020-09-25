@@ -44,12 +44,21 @@
                         <th></th>
                         <th nowrap width="20%">/assets</th>
                         <th nowrap width="25%">/balance</th>
-                        <th nowrap width="25%">/in vault</th>
+                        <th nowrap width="25%">/in vault <small>(yTOKEN)</small></th>
                         <th nowrap width="15%">/vault total</th>
                         <th nowrap width="15%">/vault profits</th>
                     </tr>
                     </thead>
                     <tbody>
+
+                    <tr>
+                        <td><input type="radio" name="currentToken" value="DAI" /></td>
+                        <td>DAI</td>
+                        <td class="display--balance" data-token="DAI">-</td>
+                        <td class="display--balance-vault" data-token="DAI">-</td>
+                        <td class="display--balance-vault-total" data-token="DAI">-</td>
+                        <td class="display--balance-vault-profits" data-token="DAI">-</td>
+                    </tr>
                     <tr>
                         <td><input type="radio" name="currentToken" value="USDT" /></td>
                         <td>USDT</td>
@@ -57,6 +66,14 @@
                         <td class="display--balance-vault" data-token="USDT">-</td>
                         <td class="display--balance-vault-total" data-token="USDT">-</td>
                         <td class="display--balance-vault-profits" data-token="USDT">-</td>
+                    </tr>
+                    <tr>
+                        <td><input type="radio" name="currentToken" value="USDC" /></td>
+                        <td>USDC</td>
+                        <td class="display--balance" data-token="USDC">-</td>
+                        <td class="display--balance-vault" data-token="USDC">-</td>
+                        <td class="display--balance-vault-total" data-token="USDC">-</td>
+                        <td class="display--balance-vault-profits" data-token="USDC">-</td>
                     </tr>
                     <tr>
                         <td colspan="2">
