@@ -206,7 +206,7 @@ const deposit = () => {
     } else {
         var staked = false;
         log('please confirm deposit');
-        vaultContracts[currentToken].methods.deposit(_amount).send({from:account})
+        vaultContracts[currentToken].methods.deposit(_amount.toString()).send({from:account})
             .on('transactionHash', function(hash){
                 log(false, hash)
             })

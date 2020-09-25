@@ -217,7 +217,7 @@ const deposit = () => {
     let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
     log('please confirm approval');
     var allowed = false;
-    tokenContracts[currentToken].methods.approve(poolAddresses[currentPool], _amount).send({from:account})
+    tokenContracts[currentToken].methods.approve(poolAddresses[currentPool], _amount.toString()).send({from:account})
         .on('transactionHash', function(hash){
             log(false, hash)
         })
@@ -226,7 +226,7 @@ const deposit = () => {
                 allowed = true;
                 var staked = false;
                 log('please confirm deposit');
-                poolContracts[currentPool].methods.stake(_amount).send({from:account})
+                poolContracts[currentPool].methods.stake(_amount.toString()).send({from:account})
                     .on('transactionHash', function(hash){
                         log(false, hash)
                     })
