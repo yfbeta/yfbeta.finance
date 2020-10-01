@@ -213,7 +213,7 @@ const withdraw = () => {
         });
 }
 const deposit = () => {
-    let _amount = web3.utils.toBN($('#input--amount').val() * (10**decimals[currentToken]));
+    let _amount = web3.utils.toBN($('#input--amount').val()).mul(web3.utils.toBN(10**decimals[currentToken]));
 
     log('please confirm approval');
     var allowed = false;
