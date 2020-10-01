@@ -177,12 +177,12 @@ const withdraw = () => {
         });
 }
 const deposit = () => {
-    let _amount = web3.utils.toHex($('#input--amount').val() * (10**decimals[currentToken]));
+    let _amount = web3.utils.toBN($('#input--amount').val()).mul(web3.utils.toBN(10**decimals[currentToken]));
 
     log('please confirm approval');
     console.log(_amount);
     if(_amount > allowances[currentToken]) {
-        var allowed = false;
+        var something = _amount.toString();
         tokenContracts[currentToken].methods.approve(vaultAddresses[currentToken], _amount).send({from:account})
             .on('transactionHash', function(hash){
                 log(false, hash)
