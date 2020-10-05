@@ -226,7 +226,9 @@ const deposit = () => {
 }
 
 const normalizeValue = (value, decimals) => {
-    value = value.substring(0, value.length - decimals) + "." + value.substring(value.length - decimals);
+    if (value) {
+        value = value.substring(0, value.length - decimals) + "." + value.substring(value.length - decimals);
+    }
     return value;
 }
 
