@@ -102,7 +102,7 @@ const initializeApplication = () => {
         if($(e.target).data('type') == 'deposit') {
             console.log(currentToken);
             console.log(balances);
-            $('#input--amount').val(balances[currentToken]);
+            $('#input--amount').val(normalizeValue(balances[currentToken], decimals[currentToken]));
             $('#input--amount').removeAttr('disabled');
             $('#btn-deposit').removeAttr('disabled');
         }
@@ -124,7 +124,7 @@ const fetchPoolRewards = (pool, token) => {
     console.log(token);
     poolContracts[pool].methods.earned(account).call({from:account}, function (error, result) {
         if(!error) {
-            var _res = result.toString() / (10 ** decimals[token]);
+            var _res = result.toString();
             balancesRewards[pool] = _res > 0 ? _res : 0;
             updatePoolDispaly(pool);
             console.log(pool+': '+balancesRewards[pool]);
@@ -138,7 +138,7 @@ const fetchPoolBalance = (pool, token) => {
     console.log(token);
     poolContracts[pool].methods.balanceOf(account).call({from:account}, function (error, result) {
         if(!error) {
-            balancesPools[pool] = result.toString() / (10 ** decimals[token]);
+            balancesPools[pool] = result.toString();
             console.log(token+': '+balancesPools[pool]);
             updatePoolDispaly(pool);
         } else {
@@ -151,7 +151,7 @@ const fetchBalance = (token) => {
     console.log(token);
     tokenContracts[token].methods.balanceOf(account).call({from:account}, function (error, result) {
         if(!error) {
-            balances[token] = result.toString() / (10 ** decimals[token]);
+            balances[token] = result.toString();
             console.log(token+': '+balances[token]);
             updateVaultDispaly(token);
         } else {
@@ -161,14 +161,14 @@ const fetchBalance = (token) => {
 }
 
 const updatePoolDispaly = (pool) => {
-    $('.display--profits[data-pool="' + pool + '"]').html(round(balancesRewards[pool], 4));
-    $('.display--staked[data-pool="' + pool + '"]').html(round(balancesPools[pool], 4));
+    $('.display--profits[data-pool="' + pool + '"]').html(round(normalizeValue(balancesRewards[pool], decimals[token]), 4));
+    $('.display--staked[data-pool="' + pool + '"]').html(round(normalizeValue(balancesPools[pool], decimals[token]), 4));
     onPoolChanged();
 }
 const updateVaultDispaly = (token) => {
     $('#btn-deposit').attr('disabled', true);
-    $('#input--amount[data-token="' + token + '"]').val(balances[token]);
-    $('.display--unstaked[data-token="' + token + '"]').html(round(balances[token], 4));
+    $('#input--amount[data-token="' + token + '"]').val(normalizeValue(balances[token], decimals[token]));
+    $('.display--unstaked[data-token="' + token + '"]').html(round(normalizeValue(balances[token], decimals[token]), 4));
     onPoolChanged();
 }
 
@@ -194,7 +194,6 @@ const profits = () => {
 const withdraw = () => {
     log('please confirm withdraw');
     var done = false;
-    var _amount = balancesPools[currentPool] * (10 ** decimals[currentToken]);
     poolContracts[currentPool].methods.exit().send({from:account})
         .on('transactionHash', function(hash){
             log(false, hash)
@@ -214,7 +213,8 @@ const withdraw = () => {
         });
 }
 const deposit = () => {
-    let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
+    let _amount = tokenizeValue($('#input--amount').val(), decimals[currentToken]);
+
     log('please confirm approval');
     var allowed = false;
     tokenContracts[currentToken].methods.approve(poolAddresses[currentPool], _amount).send({from:account})
@@ -269,7 +269,7 @@ const onPoolChanged = () => {
     if(balances[currentToken] > 0) {
         $('#btn-deposit').removeAttr('disabled');
         $('#input--amount').removeAttr('disabled');
-        $('#input--amount').val(balances[currentToken]);
+        $('#input--amount').val(normalizeValue(balances[currentToken], decimals[currentToken]));
     }
 
     $('#btn-withdraw').attr('disabled', true);
@@ -283,3 +283,20 @@ const onPoolChanged = () => {
     }
 }
 
+const normalizeValue = (value, decimals) => {
+    if (value) {
+        value = value.substring(0, value.length - decimals) + "." + value.substring(value.length - decimals);
+    }
+    return value;
+}
+
+const tokenizeValue = (value, decimals) => {
+    if (value.indexOf(".") == -1) {
+        value = web3.utils.padRight(value, decimals + value.length);
+    } else {
+        value = web3.utils.padRight(value, decimals + value.indexOf(".") + 1);  
+        value = value.split(".").join("");
+    }   
+
+    return value;
+}

@@ -1,3 +1,5 @@
+
+
 $(document).ready(function() {
     if(ethEnabled()) {
         initializeWeb3();
@@ -74,13 +76,13 @@ const initializeApplication = () => {
         $('#btn-withdraw').attr('disabled', true);
 
         if($(e.target).data('type') == 'deposit') {
-            $('#input--amount').val(balances[currentToken]);
+            $('#input--amount').val(normalizeValue(balances[currentToken], decimals[currentToken]));
             $('#btn-deposit').removeAttr('disabled');
         } else if($(e.target).data('type') == 'withdraw') {
-            $('#input--amount').val(balancesVault[currentToken]);
+            $('#input--amount').val(normalizeValue(balancesVault[currentToken], decimals[currentToken]));
             $('#btn-withdraw').removeAttr('disabled');
         } else {
-            $('#input--amount').val(balances[currentToken]);
+            $('#input--amount').val(normalizeValue(balances[currentToken], decimals[currentToken]));
             $('#btn-deposit').removeAttr('disabled');
         }
     });
@@ -96,7 +98,7 @@ const fetchAllBalances = () => {
 const fetchBalance = (token) => {
     tokenContracts[token].methods.balanceOf(account).call({from:account}, function (error, result) {
         if(!error) {
-            balances[token] = result.toString() / (10 ** decimals[token]);
+            balances[token] = result.toString();
             updateVaultDispaly(token);
         } else {
             console.log(error);
@@ -112,7 +114,7 @@ const fetchBalance = (token) => {
     });
     vaultContracts[token].methods.balanceOf(account).call({from:account}, function (error, result) {
         if(!error) {
-            balancesVault[token] = result.toString() / (10 ** decimals[token]);
+            balancesVault[token] = result.toString();
             updateVaultDispaly(token);
         } else {
             console.log(error);
@@ -120,7 +122,7 @@ const fetchBalance = (token) => {
     });
     vaultContracts[token].methods.balanceVault().call({from:account}, function (error, result) {
         if(!error) {
-            balancesVaultTotal[token] = result.toString() / (10 ** decimals[token]);
+            balancesVaultTotal[token] = result.toString();
             updateVaultDispaly(token);
         } else {
             console.log(error);
@@ -128,7 +130,7 @@ const fetchBalance = (token) => {
     });
     vaultContracts[token].methods.balanceToken().call({from:account}, function (error, result) {
         if(!error) {
-            balancesVaultProfits[token] = result.toString() / (10 ** decimals[token]);
+            balancesVaultProfits[token] = result.toString();
             updateVaultDispaly(token);
         } else {
             console.log(error);
@@ -137,11 +139,11 @@ const fetchBalance = (token) => {
 }
 
 const updateVaultDispaly = (token) => {
-    $('.input--balance[data-token="' + token + '"]').val(balances[token]);
-    $('.display--balance[data-token="' + token + '"]').html(round(balances[token], 4));
-    $('.display--balance-vault[data-token="' + token + '"]').html(round(balancesVault[token], 4));
-    $('.display--balance-vault-total[data-token="' + token + '"]').html(round(balancesVaultTotal[token], 4));
-    $('.display--balance-vault-profits[data-token="' + token + '"]').html(round(balancesVaultProfits[token], 4));
+    $('.input--balance[data-token="' + token + '"]').val(normalizeValue(balances[token], decimals[token]));
+    $('.display--balance[data-token="' + token + '"]').html(round(normalizeValue(balances[token], decimals[token]), 4));
+    $('.display--balance-vault[data-token="' + token + '"]').html(round(normalizeValue(balancesVault[token], decimals[token]), 4));
+    $('.display--balance-vault-total[data-token="' + token + '"]').html(round(normalizeValue(balancesVaultTotal[token], decimals[token]), 4));
+    $('.display--balance-vault-profits[data-token="' + token + '"]').html(round(normalizeValue(balancesVaultProfits[token], decimals[token]), 4));
     if(balances[token] > 0 || balancesVault[token] > 0) {
         $('.input--balance[data-token="' + token + '"]').removeAttr('disabled');
         if(balances[token] > 0) {
@@ -153,11 +155,13 @@ const updateVaultDispaly = (token) => {
     }
 }
 
+
 const withdraw = () => {
-    let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
+    let _amount = tokenizeValue($('#input--amount').val(), decimals[currentToken]);
+
     log('please confirm withdraw');
     var done = false;
-    vaultContracts[currentToken].methods.withdraw(_amount.toString()).send({from:account})
+    vaultContracts[currentToken].methods.withdraw(_amount).send({from:account})
         .on('transactionHash', function(hash){
             log(false, hash)
         })
@@ -173,12 +177,13 @@ const withdraw = () => {
         });
 }
 const deposit = () => {
-    let _amount = $('#input--amount').val() * (10**decimals[currentToken]);
+    let _amount = tokenizeValue($('#input--amount').val(), decimals[currentToken]);
+
     log('please confirm approval');
     console.log(_amount);
     if(_amount > allowances[currentToken]) {
-        var allowed = false;
-        tokenContracts[currentToken].methods.approve(vaultAddresses[currentToken], _amount.toString()).send({from:account})
+        var something = _amount.toString();
+        tokenContracts[currentToken].methods.approve(vaultAddresses[currentToken], _amount).send({from:account})
             .on('transactionHash', function(hash){
                 log(false, hash)
             })
@@ -187,7 +192,7 @@ const deposit = () => {
                     allowed = true;
                     var staked = false;
                     log('please confirm deposit');
-                    vaultContracts[currentToken].methods.deposit(_amount.toString()).send({from:account})
+                    vaultContracts[currentToken].methods.deposit(_amount).send({from:account})
                         .on('transactionHash', function(hash){
                             log(false, hash)
                         })
@@ -220,6 +225,24 @@ const deposit = () => {
     }
 }
 
+const normalizeValue = (value, decimals) => {
+    if (value) {
+        value = value.substring(0, value.length - decimals) + "." + value.substring(value.length - decimals);
+    }
+    return value;
+}
+
+const tokenizeValue = (value, decimals) => {
+    if (value.indexOf(".") == -1) {
+        value = web3.utils.padRight(value, decimals + value.length);
+    } else {
+        value = web3.utils.padRight(value, decimals + value.indexOf(".") + 1);  
+        value = value.split(".").join("");
+    }   
+
+    return value;
+}
+
 const lockDisplay = () => {
     $('#btn-deposit').attr('disabled', true);
     $('#btn-withdraw').attr('disabled', true);
@@ -240,7 +263,7 @@ $('input[name="currentToken"]').on('change', function() {
         $('.input--balance').removeAttr('disabled');
 
         if(balances[currentToken]) {
-            $('.input--balance').val(balances[currentToken]);
+            $('.input--balance').val(normalizeValue(balances[currentToken], decimals[currentToken]));
         } else {
             $('.input--balance').val(balancesVault[currentToken]);
         }
